@@ -1,0 +1,34 @@
+{
+	"name":"postyou/facebook-photo-gallery",
+	"description":"contao module to integrate facebook photo albums as content element",
+	"keywords":["photo","gallery","facebook","contao","element"],
+	"type":"contao-module",
+	"homepage":"http://www.postyou.de",
+	"license":"MIT",
+	"authors":[
+		{
+			"name":"Mario Gienapp",
+			"homepage":"http://www.dyingmountain.de",
+			"role":"Developer"
+		}
+	],
+	"support":{
+		"issues":"https://github.com/postyou/contao-facebook-photo-gallery/issues",
+		"source":"https://github.com/postyou/contao-facebook-photo-gallery/"
+	},
+	"require":{
+		"php":">=5.3",
+		"contao/core":">=3.3",
+		"contao-community-alliance/composer-installer":"*"
+	},
+	"autoload":{
+		"classmap":[""]
+	},
+	"extra":{
+		"contao":{
+			"sources":{
+				"":"system/modules/facebook-photo-gallery"
+			}
+		}
+	}
+}
