@@ -1,0 +1,11 @@
+<?php $this->extend('block_searchable'); ?>
+
+<?php $this->block('content'); ?>
+
+	<?php foreach ($this->galleries as $gallery): ?>
+  		<?= $gallery ?>
+    <?php endforeach; ?>
+
+  <?= $this->pagination ?>
+
+<?php $this->endblock(); ?>
