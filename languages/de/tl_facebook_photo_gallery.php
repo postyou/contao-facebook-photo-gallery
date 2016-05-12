@@ -11,4 +11,5 @@ $GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['published'][0] = 'Quelle für 
 $GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['published'][1] = 'Aktivieren Sie die Checkbox um die Quelle für den Import zu aktivieren. Nur eine aktive Quelle kann über das Modul angezeigt werden.';
 $GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['title'][0] = 'Bezeichnung';
 $GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['title'][1] = 'Geben Sie hier eine Bezeichnung für die Quelle der Fotoalben ein.';
-
+$GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['new'][0] = 'Neue Facebook Galerie-Quelle';
+$GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['new'][1] = 'Eine neue Facebookseite als Galerie-Quelle anlegen';
