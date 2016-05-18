@@ -44,7 +44,7 @@ class FacebookPhotoGalleryEngine extends \Backend {
 	public function loadFacebookPhotoAlbumsForUser($dc) {
 
 		if ($dc->activeRecord->facebookUser) {
-			$url = 'https://graph.facebook.com/v2.6/'.$dc->activeRecord->facebookUser.'/albums/?fields=link,name&access_token='.$GLOBALS['TL_CONFIG']['aggregator_facebook_app_id'].'|'.$GLOBALS['TL_CONFIG']['aggregator_faceboook_app_secret'];
+			$url = 'https://graph.facebook.com/v2.6/'.$dc->activeRecord->facebookUser.'/albums/?fields=link,name&access_token='.$GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id'].'|'.$GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret'];
 
 			$ch = curl_init();
 			// if ($header)
