@@ -258,7 +258,7 @@ class ContentFacebookPhotoGallery extends \ContentElement
 		$objTemplate = new \FrontendTemplate('facebook_photo_gallery_default');
 		$objTemplate->setData($this->arrData);
 		$objTemplate->body = $body;
-		$objTemplate->backLink = \Environment::get('script');
+		$objTemplate->backLink = 'javascript:window.history.back();';
 		$objTemplate->backText = $GLOBALS['TL_LANG']['tl_content']['backText'];
 
 		return $objTemplate;

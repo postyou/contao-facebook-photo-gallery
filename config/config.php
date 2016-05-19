@@ -29,4 +29,4 @@ $GLOBALS['BE_MOD']['content']['facebook_photo_gallery'] = array(
 /**
  * Register Cronjob
  */
-$GLOBALS['TL_CRON']['minutely'][] = array('FacebookPhotoGalleryEngine', 'checkForUpdates');
+$GLOBALS['TL_CRON']['daily'][] = array('FacebookPhotoGalleryEngine', 'checkForUpdates');
