@@ -1,4 +1,4 @@
-contao-comparison-slider
+contao-facebook-photo-gallery
 =====================
 contao module to integrate facebook photo albums as content element
 
