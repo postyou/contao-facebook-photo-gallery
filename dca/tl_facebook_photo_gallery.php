@@ -124,8 +124,8 @@ $GLOBALS['TL_DCA']['tl_facebook_photo_gallery'] = array(
 					'multiple' => true
 				),
 			'sql'	=> 'BLOB NULL',
-			'options_callback' => array('FacebookPhotoGalleryEngine', 'loadFacebookPhotoAlbumsForUser'),
-			'save_callback'	=> array(array('FacebookPhotoGalleryEngine', 'checkForUpdates'))
+			'options_callback' => array('FacebookPhotoGalleryEngine', 'loadFacebookPhotoAlbumsForUser')
+			// 'save_callback'	=> array(array('FacebookPhotoGalleryEngine', 'checkForUpdates'))
 		),
 		'published'	=> array(
 			'label'               => &$GLOBALS['TL_LANG']['tl_facebook_photo_gallery']['published'],
