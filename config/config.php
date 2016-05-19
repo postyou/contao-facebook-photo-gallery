@@ -15,7 +15,7 @@
  * Back end modules
  */
 $GLOBALS['BE_MOD']['content']['facebook_photo_gallery'] = array(
-	'tables' => array('tl_facebook_photo_gallery'),
+	'tables' => array('tl_facebook_photo_gallery_source'),
 	'icon'   => 'system/modules/facebook-photo-gallery/assets/img/icon.gif'
 );
 

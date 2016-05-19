@@ -1,0 +1,6 @@
+<<?= $this->hl ?>><?= $this->title ?></<?= $this->hl ?>>
+<figure class="image_container">
+  <a href="<?= $this->link ?>"<?= $this->attributes ?> title="<?= $this->alt ?>"><?php $this->insert('picture_default', $this->picture); ?></a>
+  <figcaption class="caption"><?= $this->title ?></figcaption>
+</figure>
+

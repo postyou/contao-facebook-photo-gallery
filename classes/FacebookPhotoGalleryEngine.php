@@ -17,7 +17,7 @@ class FacebookPhotoGalleryEngine extends \Backend {
 
 	public function getAllChannels() {
 		$arrForms = array();
-		$objForms = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery ORDER BY title");
+		$objForms = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery_source ORDER BY title");
 		while ($objForms->next())
 		{   
 			$arrForms[$objForms->id] = $objForms->title;
@@ -29,7 +29,7 @@ class FacebookPhotoGalleryEngine extends \Backend {
 	// public function getAvailableAlbums($dc) {
 	// 	if ($dc->activeRecord->albumDisplayType == 'specificAlbums') {
 	// 		$arrForms = array();
-	// 		$objForms = $this->Database->execute("SELECT facebookPhotoAlbums FROM tl_facebook_photo_gallery WHERE id IN (".implode(',',serialize($dc->activeRecord->facebookUserAlbums)).") ORDER BY title");
+	// 		$objForms = $this->Database->execute("SELECT facebookPhotoAlbums FROM tl_facebook_photo_gallery_source WHERE id IN (".implode(',',serialize($dc->activeRecord->facebookUserAlbums)).") ORDER BY title");
 	// 		while ($objForms->next())
 	// 		{   
 	// 			$arrForms[$objForms->id] = $objForms->title;
@@ -41,7 +41,17 @@ class FacebookPhotoGalleryEngine extends \Backend {
 	// 
 	// 
 
-	public function loadFacebookPhotoAlbumsForUser($dc) {
+	// public function updateFacebookPhotoAlbumsTable($varValue, $dc) {
+	// 	$path = TL_ROOT.'/system/modules/facebook-photo-gallery/cache/facebookPhotoAlbumsNames.json.cache';
+	// 	$fp = fopen($path, 'r');
+	// 	$tempData = fread($fp, filesize($path));
+	// 	fclose($fp);
+	// 	$tempData = json_decode($tempData);
+
+	// 	$this->Database->prepare("INSERT INTO tl_facebook_photo_albums VALUES (?,?,?)")->execute();
+	// }
+
+	public function loadFacebookPhotoAlbumsFromSource($dc) {
 
 		if ($dc->activeRecord->facebookUser) {
 			$url = 'https://graph.facebook.com/v2.6/'.$dc->activeRecord->facebookUser.'/albums/?fields=link,name&access_token='.$GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id'].'|'.$GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret'];
@@ -58,11 +68,17 @@ class FacebookPhotoGalleryEngine extends \Backend {
 
 			$albums = json_decode(curl_exec($ch), true)['data'];
 			$options = array();
+			$tempData = array();
 
 			if (isset($albums)) {
 				foreach ($albums as $album) {
 					$options[$album['id']] = $album['name'].'<a style="text-decoration:underline;" target="_blank" href="'.$album['link'].'">     (link)</a>';
+					$tempData[$album['id']] = $album['name'];
 				}
+
+				$fp = fopen(TL_ROOT.'/system/modules/facebook-photo-gallery/cache/facebookPhotoAlbumsNames.json.cache', 'w');
+				fwrite($fp, json_encode($tempData));
+				fclose($fp);
 				return $options;
 			}
 
@@ -76,7 +92,7 @@ class FacebookPhotoGalleryEngine extends \Backend {
 	{
 		global $GLOBALS;
 		$facebookApi = true;
-		$allActiveJobs = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery WHERE published = 1 ORDER BY lastUpdate;");
+		$allActiveJobs = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery_source WHERE published = 1 ORDER BY lastUpdate;");
 
 		while ($allActiveJobs->next())
 		{
@@ -134,8 +150,8 @@ class FacebookPhotoGalleryEngine extends \Backend {
 				}
 						
 					
-				$this->Database->prepare("UPDATE tl_facebook_photo_gallery SET lastUpdate=". time() ." WHERE id=?")->execute($allActiveJobs->id);
-    			$this->createNewVersion('tl_facebook_photo_gallery', $allActiveJobs->id);
+				$this->Database->prepare("UPDATE tl_facebook_photo_gallery_source_source SET lastUpdate=". time() ." WHERE id=?")->execute($allActiveJobs->id);
+    			$this->createNewVersion('tl_facebook_photo_gallery_source', $allActiveJobs->id);
 			}
 			
 		}
@@ -172,7 +188,7 @@ class FacebookPhotoGalleryEngine extends \Backend {
             $this->redirect($this->getReferer());
         }
  
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_facebook_photo_gallery::published', 'alexf'))
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_facebook_photo_gallery_source::published', 'alexf'))
         {
             return '';
         }
@@ -189,25 +205,25 @@ class FacebookPhotoGalleryEngine extends \Backend {
 
     public function toggleVisibility($intId, $blnPublished)
 	{
-		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_facebook_photo_gallery::published', 'alexf'))
+		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_facebook_photo_gallery_source::published', 'alexf'))
 		{
 			$this->log('Not enough permissions to show/hide record ID "'.$intId.'"', 'FacebookPhotoGalleryEngine toggleVisibility', TL_ERROR);
 			$this->redirect('contao/main.php?act=error');
 		}
 		
-		$this->createInitialVersion('tl_facebook_photo_gallery', $intId);
+		$this->createInitialVersion('tl_facebook_photo_gallery_source', $intId);
 		
-    	if (is_array($GLOBALS['TL_DCA']['tl_facebook_photo_gallery']['fields']['published']['save_callback']))
+    	if (is_array($GLOBALS['TL_DCA']['tl_facebook_photo_gallery_source']['fields']['published']['save_callback']))
     	{
-        	foreach ($GLOBALS['TL_DCA']['tl_facebook_photo_gallery']['fields']['published']['save_callback'] as $callback)
+        	foreach ($GLOBALS['TL_DCA']['tl_facebook_photo_gallery_source']['fields']['published']['save_callback'] as $callback)
         	{
             	$this->import($callback[0]);
             	$blnPublished = $this->$callback[0]->$callback[1]($blnPublished, $this);
         	}
     	}
  
-    	$this->Database->prepare("UPDATE tl_facebook_photo_gallery SET tstamp=". time() .", published='" . ($blnPublished ? '' : '1') . "' WHERE id=?")->execute($intId);
-    	$this->createNewVersion('tl_facebook_photo_gallery', $intId);
+    	$this->Database->prepare("UPDATE tl_facebook_photo_gallery_source SET tstamp=". time() .", published='" . ($blnPublished ? '' : '1') . "' WHERE id=?")->execute($intId);
+    	$this->createNewVersion('tl_facebook_photo_gallery_source', $intId);
 	}
 
 	public function convertToSeconds($str, $obj)

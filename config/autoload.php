@@ -36,6 +36,7 @@ ClassLoader::addClasses(array
  */
 TemplateLoader::addFiles(array
 (
-	'facebook_photo_gallery_default' => 'system/modules/facebook-photo-gallery/templates',
-	'ce_facebook_photo_gallery'      => 'system/modules/facebook-photo-gallery/templates',
+	'facebook_photo_gallery_default'  => 'system/modules/facebook-photo-gallery/templates',
+	'ce_facebook_photo_gallery'       => 'system/modules/facebook-photo-gallery/templates',
+	'facebook_photo_gallery_overview' => 'system/modules/facebook-photo-gallery/templates',
 ));

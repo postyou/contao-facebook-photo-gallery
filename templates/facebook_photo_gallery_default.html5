@@ -1,4 +1,4 @@
-<h1><?= $this->title ?></h1>
+<<?= $this->hl ?>><?= $this->title ?></<?= $this->hl ?>>
 <div class="<?= $this->class ?>">
   <ul class="cols_<?= $this->perRow ?>">
     <?php foreach ($this->body as $class=>$row): ?>
@@ -17,3 +17,4 @@
     <?php endforeach; ?>
   </ul>
 </div>
+<a class="back" href="<?= $this->backLink ?>"><?= $this->backText ?></a>
