@@ -162,28 +162,34 @@ class ContentFacebookPhotoGallery extends \ContentElement
 	}
 
 	private function compileAlbumPageTemplate($photos, $limit) {
+		$total = $limit;
+		$photos = array_reverse($photos);
+
+
+		$objPagination;
 		// Pagination
-			// if ($this->perPage > 0)
-			// {
-			// 	// Get the current page
-			// 	$id = 'page_g' . $this->id;
-			// 	$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
+			if ($this->perPage > 0)
+			{
+				// Get the current page
+				$id = 'page_g' . $this->id;
+				$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
 
-			// 	// Do not index or cache the page if the page number is outside the range
-			// 	if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
-			// 	{
-			// 		/** @var \PageError404 $objHandler */
-			// 		$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-			// 		$objHandler->generate($objPage->id);
-			// 	}
+				// Do not index or cache the page if the page number is outside the range
+				if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
+				{
+					/** @var \PageError404 $objHandler */
+					$objHandler = new $GLOBALS['TL_PTY']['error_404']();
+					$objHandler->generate($objPage->id);
+				}
 
-			// 	// Set limit and offset
-			// 	$offset = ($page - 1) * $this->perPage;
-			// 	$limit = min($this->perPage + $offset, $total);
+				// Set limit and offset
+				$offset = ($page - 1) * $this->perPage;
+				$limit = min($this->perPage + $offset, $total);
 
-			// 	$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
-			// 	$this->Template->pagination = $objPagination->generate("\n  ");
-			// }
+				$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
+						
+				
+			}
 
 		$rowcount = 0;
 		$colwidth = floor(100/$this->perRow);
@@ -257,6 +263,7 @@ class ContentFacebookPhotoGallery extends \ContentElement
 
 		$objTemplate = new \FrontendTemplate('facebook_photo_gallery_default');
 		$objTemplate->setData($this->arrData);
+		$objTemplate->pagination = $objPagination->generate("\n  ");
 		$objTemplate->body = $body;
 		$objTemplate->backLink = 'javascript:window.history.back();';
 		$objTemplate->backText = $GLOBALS['TL_LANG']['tl_content']['backText'];

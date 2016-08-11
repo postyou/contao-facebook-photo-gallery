@@ -17,4 +17,6 @@
     <?php endforeach; ?>
   </ul>
 </div>
+
+<?= $this->pagination ?>
 <a class="back" href="<?= $this->backLink ?>"><?= $this->backText ?></a>

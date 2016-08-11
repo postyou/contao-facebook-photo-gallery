@@ -26,31 +26,6 @@ class FacebookPhotoGalleryEngine extends \Backend {
 		return $arrForms;
 	}
 
-	// public function getAvailableAlbums($dc) {
-	// 	if ($dc->activeRecord->albumDisplayType == 'specificAlbums') {
-	// 		$arrForms = array();
-	// 		$objForms = $this->Database->execute("SELECT facebookPhotoAlbums FROM tl_facebook_photo_gallery_source WHERE id IN (".implode(',',serialize($dc->activeRecord->facebookUserAlbums)).") ORDER BY title");
-	// 		while ($objForms->next())
-	// 		{   
-	// 			$arrForms[$objForms->id] = $objForms->title;
-	// 		}
-
-	// 		return $this->
-	// 	}
-	// }
-	// 
-	// 
-
-	// public function updateFacebookPhotoAlbumsTable($varValue, $dc) {
-	// 	$path = TL_ROOT.'/system/modules/facebook-photo-gallery/cache/facebookPhotoAlbumsNames.json.cache';
-	// 	$fp = fopen($path, 'r');
-	// 	$tempData = fread($fp, filesize($path));
-	// 	fclose($fp);
-	// 	$tempData = json_decode($tempData);
-
-	// 	$this->Database->prepare("INSERT INTO tl_facebook_photo_albums VALUES (?,?,?)")->execute();
-	// }
-
 	public function loadFacebookPhotoAlbumsFromSource($dc) {
 
 		if ($dc->activeRecord->facebookUser) {
@@ -93,7 +68,6 @@ class FacebookPhotoGalleryEngine extends \Backend {
 		global $GLOBALS;
 		$facebookApi = true;
 		$allActiveJobs = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery_source WHERE published = 1 ORDER BY lastUpdate;");
-
 		while ($allActiveJobs->next())
 		{
 			if (isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_cache']))
@@ -102,9 +76,8 @@ class FacebookPhotoGalleryEngine extends \Backend {
 			} else {
 				$duration = 300;
 			}
-
-			if (time() >= $allActiveJobs->lastUpdate + $duration)
-			{
+			// if (time() >= $allActiveJobs->lastUpdate + $duration)
+			// {
 				if ($facebookApi)
 				{
 					if (isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id']) && $GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id'] != '' && isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret']) && $GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret'] != '')
@@ -119,6 +92,8 @@ class FacebookPhotoGalleryEngine extends \Backend {
 							if (isset($cacheData)) {
 								foreach ($cacheData as $album) {
 									if ($album->id === $albumId) {
+	
+												
 										$lastAlbumUpdate = $album->timestamp_updated;
 										break;
 									}
@@ -150,9 +125,9 @@ class FacebookPhotoGalleryEngine extends \Backend {
 				}
 						
 					
-				$this->Database->prepare("UPDATE tl_facebook_photo_gallery_source_source SET lastUpdate=". time() ." WHERE id=?")->execute($allActiveJobs->id);
-    			$this->createNewVersion('tl_facebook_photo_gallery_source', $allActiveJobs->id);
-			}
+				// $this->Database->prepare("UPDATE tl_facebook_photo_gallery_source SET lastUpdate=". time() ." WHERE id=?")->execute($allActiveJobs->id);
+    // 			$this->createNewVersion('tl_facebook_photo_gallery_source', $allActiveJobs->id);
+			// }
 			
 		}
 		
@@ -246,17 +221,38 @@ class FacebookPhotoGalleryEngine extends \Backend {
 		$url = 'https://graph.facebook.com/v2.6/'.$albumId.'/photos/?fields=images,source,link,height,width&access_token='.$GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id'].'|'.$GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret'];
 		$ch = $this->initCurl($url);
 		$photos = json_decode(curl_exec($ch), true)['data'];
-		curl_close($ch);
+		$next = urldecode(json_decode(curl_exec($ch), true)['paging']['next']);
+		echo '<pre>';
+		var_dump('ALBUM_ID:      '.$albumId);
+		echo '</pre>';
 		
+		while ($next) {
+					// echo '<pre>';
+					// var_dump($next);
+					// echo '</pre>';
+			$ch = $this->initCurl($next);
+			$jsonResult = json_decode(curl_exec($ch), true);
+			$next = urldecode($jsonResult['paging']['next']);
+			$photos = array_merge_recursive($photos, $jsonResult['data']);
+
+
+			curl_close($ch);
+					
+		}
+
+
+		
+
 		$photos = $this->loadImagesToLocalFileSystem($albumId, $photos, $albumData['updated_time'], $lastUpdate);
 		
 		$albumData['photos'] = $photos;
-		
+		echo '<pre>';
+					var_dump($photos);
+					echo '</pre>';
 		return $albumData;
 	}
 
 	private function loadCacheData($fileId) {
-		// $cacheData = array();
 		$path = TL_ROOT.'/system/modules/facebook-photo-gallery/cache/'.$fileId.'.json.cache';
 		if (!file_exists($path)) {
 			return;
