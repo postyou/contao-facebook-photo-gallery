@@ -67,68 +67,54 @@ class FacebookPhotoGalleryEngine extends \Backend {
 	{
 		global $GLOBALS;
 		$facebookApi = true;
-		$allActiveJobs = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery_source WHERE published = 1 ORDER BY lastUpdate;");
+		$allActiveJobs = $this->Database->execute("SELECT * FROM tl_facebook_photo_gallery_source WHERE published = 1;");
 		while ($allActiveJobs->next())
 		{
-			if (isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_cache']))
+			if ($facebookApi)
 			{
-				$duration = $GLOBALS['TL_CONFIG']['facebook_photo_gallery_cache'];
-			} else {
-				$duration = 300;
-			}
-			// if (time() >= $allActiveJobs->lastUpdate + $duration)
-			// {
-				if ($facebookApi)
+				if (isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id']) && $GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id'] != '' && isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret']) && $GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret'] != '')
 				{
-					if (isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id']) && $GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_id'] != '' && isset($GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret']) && $GLOBALS['TL_CONFIG']['facebook_photo_gallery_app_secret'] != '')
-					{
-						$cacheData = $this->loadCacheData($allActiveJobs->id);
+					$cacheData = $this->loadCacheData($allActiveJobs->id);
 
-						$albumIds = unserialize($allActiveJobs->facebookPhotoAlbums);
-						$data = array();
+					$albumIds = unserialize($allActiveJobs->facebookPhotoAlbums);
+					$data = array();
 
-						foreach ($albumIds as $albumId) {
-							$lastAlbumUpdate = 0;
-							if (isset($cacheData)) {
-								foreach ($cacheData as $album) {
-									if ($album->id === $albumId) {
-	
-												
-										$lastAlbumUpdate = $album->timestamp_updated;
-										break;
-									}
+					foreach ($albumIds as $albumId) {
+						$lastAlbumUpdate = 0;
+						if (isset($cacheData)) {
+							foreach ($cacheData as $album) {
+								if ($album->id === $albumId) {
+
+											
+									$lastAlbumUpdate = $album->timestamp_updated;
+									break;
 								}
 							}
-							$data[] = $this->loadAlbumData($albumId, $lastAlbumUpdate);
 						}
+						$data[] = $this->loadAlbumData($albumId, $lastAlbumUpdate);
+					}
 
-						if ($data[0] === false) {
-							return;
-						}
+					if ($data[0] === false) {
+						return;
+					}
 
-						if ($data['error']['code'] == 4)
-						{
-							$facebookApi = false;
-							$this->log($GLOBALS['TL_LANG']['ERR']['maximumRate'], 'FacebookPhotoGalleryEngine checkForUpdates()',TL_ERROR);
-						} else {
-							if (count($data) > 0)
-							{
-								$this->parseDataToCache($data, $allActiveJobs->id);
-							}
-						}
-						
-					} else {
+					if ($data['error']['code'] == 4)
+					{
 						$facebookApi = false;
-						$this->log($GLOBALS['TL_LANG']['ERR']['noFacebookCredentials'], 'FacebookPhotoGalleryEngine checkForUpdates()',TL_ERROR);
+						$this->log($GLOBALS['TL_LANG']['ERR']['maximumRate'], 'FacebookPhotoGalleryEngine checkForUpdates()',TL_ERROR);
+					} else {
+						if (count($data) > 0)
+						{
+							$this->parseDataToCache($data, $allActiveJobs->id);
+						}
 					}
 					
+				} else {
+					$facebookApi = false;
+					$this->log($GLOBALS['TL_LANG']['ERR']['noFacebookCredentials'], 'FacebookPhotoGalleryEngine checkForUpdates()',TL_ERROR);
 				}
-						
-					
-				// $this->Database->prepare("UPDATE tl_facebook_photo_gallery_source SET lastUpdate=". time() ." WHERE id=?")->execute($allActiveJobs->id);
-    // 			$this->createNewVersion('tl_facebook_photo_gallery_source', $allActiveJobs->id);
-			// }
-			
+				
+			}
 		}
 		
 	}
