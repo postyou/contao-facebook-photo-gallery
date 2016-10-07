@@ -8,7 +8,7 @@
  * @package   facebook_photo_gallery 
  * @author    Mario Gienapp
  * @license   MIT License
- * @copyright  Werbeagentur POSTYOU 2016
+ * @copyright  POSTYOU 2016
  */
  
 /**
