@@ -8,7 +8,7 @@
  * @package   facebook-photo-gallery 
  * @author    Mario Gienapp
  * @license   MIT License
- * @copyright POSTYOU Werbeagentur 2016
+ * @copyright POSTYOU 2016
  */
 
 $GLOBALS['TL_DCA']['tl_content']['palettes']['facebook_photo_gallery'] = '{type_legend},type,headline;{facebookPhotoGalleryOverview_legend},showFacebookGalerieOverviewPage;{facebookPhotoGalleryContent_legend},facebookUserAlbums,refresh,size,imagemargin,perRow, perPage;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
